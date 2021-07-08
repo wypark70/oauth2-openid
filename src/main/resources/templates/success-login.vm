@@ -1,0 +1,21 @@
+<html>
+<head>
+    <title>You are logged in successfully</title>
+    <meta name="decorator" content="atl.general">
+</head>
+<body class="page-type-admin">
+<div class="content-container">
+    <div class="jumbotron">
+        <h3>Hello ${userName}!</h3>
+
+        <p>User info</p>
+        <ul>
+            #foreach( $entry in $userInfo.entrySet() )
+                <li>Key: $entry.key -> Value: $entry.value</li>
+            #end
+        </ul>
+    </div>
+</div>
+</body>
+</html>
+
