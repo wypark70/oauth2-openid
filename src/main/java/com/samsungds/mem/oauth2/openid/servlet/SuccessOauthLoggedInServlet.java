@@ -14,7 +14,6 @@ import com.atlassian.plugin.spring.scanner.annotation.component.JiraComponent;
 import com.atlassian.plugin.spring.scanner.annotation.imports.JiraImport;
 import com.atlassian.seraph.auth.DefaultAuthenticator;
 import com.atlassian.templaterenderer.TemplateRenderer;
-import com.samsungds.mem.oauth2.openid.util.SessionConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +25,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import static com.samsungds.mem.oauth2.openid.util.SessionConstants.*;
 
 @JiraComponent
 public class SuccessOauthLoggedInServlet extends HttpServlet {
@@ -65,18 +66,18 @@ public class SuccessOauthLoggedInServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String idToken = (String) req.getSession().getAttribute(SessionConstants.ID_TOKEN);
+        String idToken = (String) req.getSession().getAttribute(ID_TOKEN);
         // todo: remove tokens from logs
-        log.debug("Token {}: {}", SessionConstants.ID_TOKEN, idToken);
+        log.debug("Token {}: {}", ID_TOKEN, idToken);
 
-        String accessToken = (String) req.getSession().getAttribute(SessionConstants.ACCESS_TOKEN);
-        log.debug("Token {}: {}", SessionConstants.ACCESS_TOKEN, accessToken);
+        String accessToken = (String) req.getSession().getAttribute(ACCESS_TOKEN);
+        log.debug("Token {}: {}", ACCESS_TOKEN, accessToken);
 
-        Map<String, Object> userInfoValues = (Map<String, Object>) req.getSession().getAttribute(SessionConstants.USER_INFO);
+        Map<String, Object> userInfoValues = (Map<String, Object>) req.getSession().getAttribute(USER_INFO);
 
         Map<String, Object> context = new HashMap<>();
         context.put("userInfo", userInfoValues);
-        context.put("userName", userInfoValues.get("nickname"));
+        context.put("userName", userInfoValues.get("username"));
 
         log.info("User info: {}", userInfoValues);
 
@@ -109,7 +110,7 @@ public class SuccessOauthLoggedInServlet extends HttpServlet {
 
     private ApplicationUser createApplicationUser(Map<String, Object> userInfoValues) {
         log.info("Creating new user with email {}", userInfoValues.get("email"));
-        UserDetails userDetails = new UserDetails((String) userInfoValues.get("nickname"), (String) userInfoValues.get("name"))
+        UserDetails userDetails = new UserDetails((String) userInfoValues.get("username"), (String) userInfoValues.get("displayName"))
                 .withEmail((String) userInfoValues.get("email"))
                 .withPassword("1");
 

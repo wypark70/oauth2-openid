@@ -51,14 +51,7 @@ public class ConfigResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response get(@Context HttpServletRequest request) {
-        // todo: checking user permissions must be in filter
-        ApplicationUser user = authenticationContext.getLoggedInUser();
-        boolean isSystemAdmin = RequestCachingConditionHelper.cacheConditionResultInRequest(ConditionCacheKeys.permission(GlobalPermissionKey.SYSTEM_ADMIN, user),
-                () -> this.permissionManager.hasPermission(GlobalPermissionKey.SYSTEM_ADMIN, user));
-        if (!isSystemAdmin) {
-            log.error("Not enough permissions for user {}", user);
-            return Response.status(HttpServletResponse.SC_FORBIDDEN).build();
-        }
+        if (checkPermission()) return Response.status(HttpServletResponse.SC_FORBIDDEN).build();
 
         return Response.ok(transactionTemplate.execute(() -> {
             PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
@@ -73,16 +66,21 @@ public class ConfigResource {
         })).build();
     }
 
-    @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response put(final AuthenticationInfo config, @Context HttpServletRequest request) {
+    private boolean checkPermission() {
         ApplicationUser user = authenticationContext.getLoggedInUser();
         boolean isSystemAdmin = RequestCachingConditionHelper.cacheConditionResultInRequest(ConditionCacheKeys.permission(GlobalPermissionKey.SYSTEM_ADMIN, user),
                 () -> this.permissionManager.hasPermission(GlobalPermissionKey.SYSTEM_ADMIN, user));
         if (!isSystemAdmin) {
             log.error("Not enough permissions for user {}", user);
-            return Response.status(HttpServletResponse.SC_FORBIDDEN).build();
+            return true;
         }
+        return false;
+    }
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response put(final AuthenticationInfo config, @Context HttpServletRequest request) {
+        if (checkPermission()) return Response.status(HttpServletResponse.SC_FORBIDDEN).build();
 
         AuthenticationInfoChecker.checkAuthenticationInfo(config);
 

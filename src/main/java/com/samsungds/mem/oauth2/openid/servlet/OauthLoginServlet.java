@@ -55,7 +55,7 @@ public class OauthLoginServlet extends HttpServlet {
 
         AuthenticationHandler authHandler = authenticationProvider.getInstance();
         String authorizeUrl = authHandler.authorizeUrl(redirectUri)
-                .withAudience(String.format("%s/userinfo", authHandler.getDomain()))
+                // .withAudience(String.format("%s/userinfo", authHandler.getDomain()))
                 .withScope("openid profile email")
                 .build();
 

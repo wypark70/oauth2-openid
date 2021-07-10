@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 @JiraComponent
@@ -62,35 +63,60 @@ public class CallbackAuthorizeServlet extends HttpServlet {
     }
 
     private void handle(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        AuthenticationHandler authenticationHandler = authenticationProvider.getInstance();
         try {
-            log.info("Handle callback authorize request");
-
-            Tokens tokens = authenticationHandler.handle(req);
-            log.info("Token processed successfully: {}", tokens);
-
-            req.getSession().setAttribute(SessionConstants.ACCESS_TOKEN, tokens.getAccessToken());
-            log.debug("Token {}: {}", SessionConstants.ACCESS_TOKEN, tokens.getAccessToken());
-
-            req.getSession().setAttribute(SessionConstants.ID_TOKEN, tokens.getIdToken());
-            log.debug("Token {}: {}", SessionConstants.ID_TOKEN, tokens.getIdToken());
-
-            UserInfo userInfo = authenticationHandler.getUserInfo(tokens.getAccessToken());
-
-            Map<String, Object> userInfoValues = userInfo.getValues();
-            log.info("User info: {}", userInfoValues);
-
-            req.getSession().setAttribute(SessionConstants.USER_INFO, userInfoValues);
-
-            log.info("Redirect on: {}", redirectOnSuccess);
-            resp.sendRedirect(redirectOnSuccess);
+            processCallbackTest(req, resp);
         } catch (AuthenticationException | Auth0Exception e) {
-            log.error("Token is not correct: {}", e.getMessage());
-            e.printStackTrace();
-
-            log.info("Redirect on: {}", redirectOnFail);
-            resp.sendRedirect(redirectOnFail);
+            processOnFail(resp, e);
         }
     }
 
+    @SuppressWarnings("unused")
+    private void processOnFail(HttpServletResponse resp, Exception e) throws IOException {
+        log.error("Token is not correct: {}", e.getMessage());
+        e.printStackTrace();
+
+        log.info("Redirect on: {}", redirectOnFail);
+        resp.sendRedirect(redirectOnFail);
+    }
+
+    @SuppressWarnings("unused")
+    private void processCallback(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        AuthenticationHandler authenticationHandler = authenticationProvider.getInstance();
+
+        log.info("Handle callback authorize request");
+
+        Tokens tokens = authenticationHandler.handle(req);
+        log.info("Token processed successfully: {}", tokens);
+
+        req.getSession().setAttribute(SessionConstants.ACCESS_TOKEN, tokens.getAccessToken());
+        log.debug("Token {}: {}", SessionConstants.ACCESS_TOKEN, tokens.getAccessToken());
+
+        req.getSession().setAttribute(SessionConstants.ID_TOKEN, tokens.getIdToken());
+        log.debug("Token {}: {}", SessionConstants.ID_TOKEN, tokens.getIdToken());
+
+        UserInfo userInfo = authenticationHandler.getUserInfo(tokens.getAccessToken());
+
+        Map<String, Object> userInfoValues = userInfo.getValues();
+        log.info("User info: {}", userInfoValues);
+
+        req.getSession().setAttribute(SessionConstants.USER_INFO, userInfoValues);
+
+        log.info("Redirect on: {}", redirectOnSuccess);
+        resp.sendRedirect(redirectOnSuccess);
+    }
+
+    @SuppressWarnings("unused")
+    private void processCallbackTest(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        Map<String, Object> userInfoValues = new HashMap<>();
+
+        userInfoValues.put("email", "wypark70@gmail.com");
+        userInfoValues.put("displayName", "WooYong Park");
+        userInfoValues.put("username", "wypark70");
+        log.info("User info: {}", userInfoValues);
+
+        req.getSession().setAttribute(SessionConstants.USER_INFO, userInfoValues);
+
+        log.info("Redirect on: {}", redirectOnSuccess);
+        resp.sendRedirect(redirectOnSuccess);
+    }
 }

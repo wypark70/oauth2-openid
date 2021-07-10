@@ -1,4 +1,4 @@
-<html>
+<html lang="en">
 <head>
     <title>You are logged in successfully</title>
     <meta name="decorator" content="atl.general">
@@ -15,6 +15,7 @@
             #end
         </ul>
     </div>
+    <a href="/secure/WelcomeToJIRA.jspa">WelcomeToJIRA</a>
 </div>
 </body>
 </html>
