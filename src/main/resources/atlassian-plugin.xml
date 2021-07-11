@@ -12,6 +12,12 @@
     <!-- add our i18n resource -->
     <resource type="i18n" name="i18n" location="oauth-plugin"/>
 
+    <web-resource key="not-loggedin-resources" name="not-loggedin Web Resources">
+        <condition class="com.atlassian.jira.plugin.webfragment.conditions.UserLoggedInCondition" invert="true"/>
+        <resource type="download" name="not-loggedin.js" location="/js/not-loggedin.js"/>
+        <context>atl.general</context>
+    </web-resource>
+
     <!-- add our web resources -->
     <web-resource key="oauth-plugin-resources" name="oauth-plugin Web Resources">
         <dependency>com.atlassian.auiplugin:ajs</dependency>
@@ -21,7 +27,7 @@
         <context>oauth-plugin</context>
     </web-resource>
 
-    <servlet name="Oauth Page Servlet" i18n-name-key="oauth-page-servlet.name" key="oauth-page-servlet"
+    <servlet name="Oauth Page" i18n-name-key="oauth-page-servlet.name" key="oauth-page-servlet"
              class="com.samsungds.mem.oauth2.openid.servlet.OauthLoginServlet">
         <description key="oauth-page-servlet.description">The Oauth Page Servlet Plugin</description>
         <url-pattern>/oauth-login</url-pattern>
@@ -31,7 +37,7 @@
         </init-param>
     </servlet>
 
-    <servlet name="Callback Oauth Sevlet" i18n-name-key="callback-oauth-sevlet.name" key="callback-oauth-sevlet"
+    <servlet name="Callback Oauth" i18n-name-key="callback-oauth-sevlet.name" key="callback-oauth-sevlet"
              class="com.samsungds.mem.oauth2.openid.servlet.CallbackAuthorizeServlet">
         <description key="callback-oauth-sevlet.description">The callback of oauth authorization</description>
         <url-pattern>/callback</url-pattern>
@@ -58,7 +64,7 @@
         <url-pattern>/oauth/configuration</url-pattern>
     </servlet>
 
-    <rest key="rest" path="/oauth/admin" version="1.0">
+    <rest key="rest" name="OAuth admin configuration rest" path="/oauth/admin" version="1.0">
         <description>Provides REST resources for the admin UI.</description>
     </rest>
 
@@ -68,16 +74,23 @@
 
     <web-item key="website_link" name="OAuth Login" section="system.top.navigation.bar" weight="10">
         <condition class="com.atlassian.jira.plugin.webfragment.conditions.UserLoggedInCondition" invert="true"/>
-        <label>Open ID Connect Plugin</label>
+        <label>AD SSO Open ID Loin</label>
         <!-- todo: set unique plugin id in the path -->
         <link linkId="oauth-link" absolute="false">/plugins/servlet/oauth-login</link>
     </web-item>
 
-    <web-item key="jira-menu-item" name="XProduct Admin" section="system.admin/globalsettings" weight="10"
+    <web-item key="jira-menu-item" name="OAuth admin configuration" section="system.admin/globalsettings" weight="10"
               application="jira">
         <description>Link to oauth-login page.</description>
         <label key="oauth.admin.label"/>
         <link linkId="oauth-admin-link">/plugins/servlet/oauth/configuration</link>
     </web-item>
 
+    <webwork1 key="qquserissue" name="Quick Create User Issue" class="java.lang.Object">
+        <actions>
+            <action name="com.atlassian.jira.toolkit.action.QuickCreateUserIssueAction" alias="QuickCreateUserIssue">
+                <view name="createuserissue">/templates/quickcreateuser.vm</view>
+            </action>
+        </actions>
+    </webwork1>
 </atlassian-plugin>
