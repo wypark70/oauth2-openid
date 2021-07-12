@@ -33,14 +33,14 @@
         <url-pattern>/oauth-login</url-pattern>
         <init-param>
             <param-name>callbackPath</param-name>
-            <param-value>/plugins/servlet/callback</param-value>
+            <param-value>/plugins/servlet/sso/redirect</param-value>
         </init-param>
     </servlet>
 
     <servlet name="Callback Oauth" i18n-name-key="callback-oauth-sevlet.name" key="callback-oauth-sevlet"
              class="com.samsungds.mem.oauth2.openid.servlet.CallbackAuthorizeServlet">
         <description key="callback-oauth-sevlet.description">The callback of oauth authorization</description>
-        <url-pattern>/callback</url-pattern>
+        <url-pattern>/sso/redirect</url-pattern>
         <init-param>
             <param-name>redirectOnSuccess</param-name>
             <param-value>/plugins/servlet/success</param-value>
