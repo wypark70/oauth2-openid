@@ -4,7 +4,7 @@
     <meta name="decorator" content="atl.general">
 </head>
 <body class="page-type-admin">
-<div class="content-container">
+<div class="content-container" >
     <div class="jumbotron">
         <h3>Hello ${userName}!</h3>
 
@@ -17,6 +17,11 @@
     </div>
     <a href="/secure/WelcomeToJIRA.jspa">WelcomeToJIRA</a>
 </div>
+<script>
+    (function ($) {
+        window.location.href="/"
+    })(AJS.$ || jQuery);
+</script>
 </body>
 </html>
 
